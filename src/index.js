@@ -8,6 +8,7 @@ const { typeDefs, resolvers } = require('./schema');
 const { verifyToken } = require('./jwtVerify');
 
 dotenv.config();
+
 const prisma = new PrismaClient();
 
 async function start() {
@@ -17,18 +18,19 @@ async function start() {
     process.env.FRONTEND_URL || 'http://localhost:3000'
   ];
 
+  if (!process.env.FRONTEND_URL) {
+    console.warn('⚠️ FRONTEND_URL not set, defaulting to http://localhost:3000');
+  }
+
   app.use(cors({
     origin: function (origin, callback) {
-      // Allow no-origin requests (SSR, curl, mobile apps)
-      if (!origin) return callback(null, true);
+      if (!origin) return callback(null, true); // SSR, curl, mobile
 
-      // ✅ Dev mode: allow any origin
       if (process.env.NODE_ENV !== 'production') {
-        return callback(null, true);
+        return callback(null, true); // Dev mode: allow all
       }
 
-      // ✅ Prod mode: strict check
-      if (allowedOrigins.some(allowed => origin.startsWith(allowed))) {
+      if (allowedOrigins.includes(origin)) {
         return callback(null, true);
       }
 
@@ -38,19 +40,18 @@ async function start() {
     credentials: true,
   }));
 
-  // Health check
   app.get('/', (req, res) => res.send('SMATE GraphQL server is running'));
 
   const server = new ApolloServer({
     typeDefs,
     resolvers,
     context: async ({ req }) => {
-      const auth = req.headers.authorization || '';
+      const authHeader = req.headers.authorization || '';
       let user = null;
       let decoded = null;
 
-      if (auth.startsWith('Bearer ') && auth.length > 7) {
-        const token = auth.split(' ')[1];
+      if (authHeader.startsWith('Bearer ')) {
+        const token = authHeader.slice(7).trim();
         try {
           decoded = await verifyToken(token);
           if (decoded?.sub) {
@@ -66,8 +67,8 @@ async function start() {
               });
             }
           }
-        } catch (e) {
-          console.warn('JWT verify failed:', e.message);
+        } catch (err) {
+          console.warn('JWT verify failed:', err.message);
         }
       }
 
@@ -83,6 +84,16 @@ async function start() {
     console.log(`✅ Server ready at http://localhost:${port}${server.graphqlPath}`);
   });
 }
+
+process.on('SIGINT', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
+
+process.on('SIGTERM', async () => {
+  await prisma.$disconnect();
+  process.exit(0);
+});
 
 start().catch(err => {
   console.error(err);
