@@ -1,21 +1,21 @@
-# SMATE Frontend
+# SMATE Backend
 
-This is the frontend application for **SMATE**, built with **Next.js** and integrated with **Auth0** for authentication.  
-It communicates with the SMATE backend GraphQL API.
+This is the backend service for **SMATE**, built with **Node.js**, **Express**, **Apollo Server**, and **Prisma ORM**.  
+It provides a secure GraphQL API and integrates with Auth0 for authentication.
 
 ## 🚀 Features
-- Next.js 13+ framework
-- Auth0 authentication (login, logout, secure routes)
-- GraphQL API integration
-- Responsive UI
-- Environment variable support for configuration
+- GraphQL API with Apollo Server
+- Prisma ORM for database access
+- JWT authentication with Auth0
+- CORS setup for secure frontend-backend communication
+- Environment-based configuration
 
 ## 📦 Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/kl987456/smate-frontend.git
-cd smate-frontend
+git clone https://github.com/kl987456/smate-backend.git
+cd smate-backend
 
 # Install dependencies
 npm install
@@ -23,12 +23,12 @@ npm install
 bash
 Copy
 Edit
-# Run the app locally
+# Run the backend server
 npm run dev
-The app will start on:
+The GraphQL API will be available at:
 
-arduino
+bash
 Copy
 Edit
-http://localhost:3000
-Author : kamal Reddy
+http://localhost:4000/graphql
+author : kamal reddy
