@@ -13,7 +13,7 @@ model User {
   auth0Id     String?      @unique
   email       String       @unique
   name        String?
-  role        String       @default("CARE") // "CARE" or "MANAGER"
+  role        String       @default("CARE")
   clockEvents ClockEvent[]
   createdAt   DateTime     @default(now())
 }
@@ -23,7 +23,7 @@ model Location {
   name    String
   lat     Float
   lng     Float
-  radius  Float        // meters
+  radius  Float
   events  ClockEvent[]
 }
 
@@ -33,7 +33,7 @@ model ClockEvent {
   userId     Int
   location   Location  @relation(fields: [locationId], references: [id])
   locationId Int
-  type       String    // "IN" or "OUT"
+  type       String
   lat        Float
   lng        Float
   note       String?
